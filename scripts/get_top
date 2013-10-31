@@ -1,0 +1,16 @@
+#! /usr/bin/env python
+
+import cPickle
+
+with open('Data/system.dat','r') as a:
+    data = cPickle.load(a)
+    t = data._top_string
+    c = data._mdcrd_string
+    with open('topol.top','w') as b:
+        b.write(t)
+    with open('topol.crd','w') as b:
+        b.write(c)
+
+
+
+
