@@ -190,3 +190,4 @@ class TestGetRdcRestraints(unittest.TestCase):
         results = parse.get_rdc_restraints(contents=contents, system=self.system, scaler=self.scaler)
 
         self.assertEqual(len(results), 1)
+

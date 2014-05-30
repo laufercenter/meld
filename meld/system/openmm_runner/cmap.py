@@ -8,6 +8,9 @@ import numpy as np
 from meld.system.system import ParmTopReader
 
 
+nucleic = ['DA','DC','DG','DT','RA','RC','RG','RU',
+           'DA3','DC3','DG3','DT3','RA3','RC3','RG3','RU3',
+           'DA5','DC5','DG5','DT5','RA5','RC5','RG5','RU5'] 
 CMAPResidue = namedtuple('CMAPResidue', 'res_num res_name index_N index_CA index_C')
 
 
@@ -102,6 +105,12 @@ class CMAPAdder(object):
         # now turn the ordered dict into a list of CMAPResidues
         residues = [self._to_cmap_residue(num, name) for (num, name) in residues.items()]
 
+        # filter any None residues, which are nucleic acids
+        residues = [r for r in residues if not r is None]
+        # if there are no protein residues, then we're done
+        if not residues:
+            raise StopIteration
+
         # is each residue i connected to it's predecessor, i-1?
         connected = self._compute_connected(residues)
 
@@ -147,11 +156,14 @@ class CMAPAdder(object):
         :param name: residue name
         :return: CMAPResidue
         """
-        n = self._atom_map[(num, 'N')]
-        ca = self._atom_map[(num, 'CA')]
-        c = self._atom_map[(num, 'C')]
-        res = CMAPResidue(res_num=num, res_name=name, index_N=n, index_CA=ca, index_C=c)
-        return res
+        if name not in nucleic:
+            n = self._atom_map[(num, 'N')]
+            ca = self._atom_map[(num, 'CA')]
+            c = self._atom_map[(num, 'C')]
+            res = CMAPResidue(res_num=num, res_name=name, index_N=n, index_CA=ca, index_C=c)
+            return res
+        else:
+            pass
 
     def _load_map(self, stem):
         basedir = os.path.join(os.path.dirname(__file__), 'maps')
